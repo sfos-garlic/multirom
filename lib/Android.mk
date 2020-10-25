@@ -91,7 +91,16 @@ include $(multirom_local_path)/device_defines.mk
 
 include $(BUILD_STATIC_LIBRARY)
 
+include $(CLEAR_VARS)
 
+LOCAL_MODULE := libmultirom_fake_logger
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_SRC_FILES := fake_logger.c
+LOCAL_SRC_FILES += klog.c
+
+
+include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
