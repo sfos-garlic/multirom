@@ -47,6 +47,7 @@ extern "C" {
 #include "adb.h"
 #include "../hooks.h"
 #include "encryption.h"
+#include "../no_kexec.h"
 
 #ifdef MR_POPULATE_BY_NAME_PATH
 	#include "Populate_ByName_using_emmc.c"
@@ -190,7 +191,7 @@ static int find_multirom(void)
     return -1;
 }
 
-static void run_multirom(void)
+static void run_multirom(int isFbe)
 {
     char path[256];
     struct stat info;
@@ -217,11 +218,11 @@ static void run_multirom(void)
     }
     chmod(path, EXEC_MASK);
 
-    char *cmd[] = { path, NULL };
+    const char *cmd[] = { path, isFbe ? "alwaysreboot" : NULL, NULL };
     do
     {
         ERROR("Running multirom\n");
-        int res = run_cmd(cmd);
+        int res = run_cmd((char**)cmd);
         if(res == 0)
             break;
         else
@@ -340,15 +341,18 @@ static int mount_and_run(struct fstab *fstab)
 #endif
     }
 
-    if(find_multirom() == -1)
-    {
-        ERROR("Could not find multirom folder!\n");
-        return -1;
-    }
+    if (ret == -2 && !nokexec_is_skip_mr()) {
+        INFO("skip mr flag false.. running multirom");
+        if(find_multirom() == -1)
+        {
+            ERROR("Could not find multirom folder!\n");
+            return -1;
+        }
 
-    adb_init(path_multirom);
-    run_multirom();
-    adb_quit();
+        adb_init(path_multirom);
+        run_multirom(ret == -2);
+        adb_quit();
+    }
     return 0;
 }
 
@@ -686,7 +690,12 @@ int main(int argc, char *argv[])
     devices_init();
     INFO("Done initializing\n");
 
-    run_core();
+    if (nokexec_is_skip_mr()) {
+        INFO("skip mr flag true.. setting it to false for next boot\n");
+        nokexec_unset_skip_mr_flag();
+    } else {
+        run_core();
+    }
 
     // close and destroy everything
     devices_close();
@@ -695,6 +704,7 @@ run_main_init:
     umount("/dev/pts");
     rmdir("/dev/pts");
     rmdir("/dev/socket");
+    rmdir("/tmp");
 
     if(access(KEEP_REALDATA, F_OK) < 0) {
         umount("/dev");
@@ -708,7 +718,8 @@ run_main_init:
         DIR* dir = opendir("/proc/device-tree/firmware/android");
         copy_dir_contents(dir, "/proc/device-tree/firmware/android", "/fakefstab", NULL);
         //remove("/fakefstab/fstab/system/mnt_point");
-        rmdir("/fakefstab/fstab/vendor");
+        closedir(dir);
+        //remove("/fakefstab/fstab/vendor/mnt_point");
     }
     umount("/proc");
     umount("/sys/fs/pstore");
@@ -720,6 +731,8 @@ run_main_init:
     INFO("Running main_init\n");
 
     fixup_symlinks();
+
+    //INFO("%s\n", read_file("strace-qseecomd"));
 
     char* context = (char*)calloc(1, 50);
     getfilecon("/main_init", &context);
