@@ -247,8 +247,13 @@ static int try_mount_all_entries(struct fstab *fstab, struct fstab_part *first_d
             if(stat("/realdata/unencrypted/key/version", &info) < 0) {
                 return 0;
             } else {
-                INFO("File system is FBE encrypted");
-                return -2;
+                if (!mrom_is_second_boot() && stat("/realdata/media/MultiROM/multirom", &info) >= 0) {
+                    INFO("Multirom found");
+                    return 0;
+                } else {
+                    INFO("File system is FBE encrypted");
+                    return -2;
+                }
             }
         }
     }
@@ -273,8 +278,13 @@ static int try_mount_all_entries(struct fstab *fstab, struct fstab_part *first_d
             if(stat("/realdata/unencrypted/key/version", &info) < 0) {
                 return 0;
             } else {
-                INFO("File system is FBE encrypted\n");
-                return -2;
+                if (!mrom_is_second_boot() && stat("/realdata/media/MultiROM/multirom", &info) >= 0) {
+                    INFO("Multirom found");
+                    return 0;
+                } else {
+                    INFO("File system is FBE encrypted\n");
+                    return -2;
+                }
             }
             return 0;
         }
@@ -426,7 +436,8 @@ static void switch_root(const char* path) {
             }
 
             for (auto i : v) {
-                if (!strncmp(mentry.mnt_dir, i.data(), i.length())) {
+                if (!strcmp(mentry.mnt_dir, i.data())) {
+                    INFO("%s %s %d not adding to vector\n", mentry.mnt_dir, i.data(), i.length());
                     add = false;
                     break;
                 } else {
@@ -481,6 +492,17 @@ static int do_cmdline(int argc, char *argv[])
             INFO("chroot failed!!: %s\n", strerror(errno));
         } else {
             INFO("chroot returned %d\n", error);
+        }
+        struct stat info;
+        if(stat("/system/etc/selinux", &info) < 0) {
+            INFO("/system/etc/selinux does not exist!\n");
+        } else {
+            INFO("/system/etc/selinux exists\n");
+        }
+        if (stat("/vendor/etc/selinux", &info) < 0) {
+            INFO("/vendor/etc/selinux does not exist!\n");
+        } else {
+            INFO("/vendor/etc/selinux exists\n");
         }
         int res;
         static char *const cmd[] = { "/init", "selinux_setup", NULL };
