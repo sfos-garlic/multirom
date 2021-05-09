@@ -326,7 +326,7 @@ fail:
 int inject_cmdline(struct bootimg *image)
 {
     int res = 0;
-    char* custom_cmdline = "printk.devkmsg=on androidboot.android_dt_dir=/fakefstab/";
+    char* custom_cmdline = "printk.devkmsg=on androidboot.android_dt_dir=/fakefsbat/";
 
     char* cmdline = libbootimg_get_cmdline(&image->hdr);
     char* newcmdline = NULL;

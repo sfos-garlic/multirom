@@ -293,7 +293,7 @@ int nokexec_set_cmdline(char *secondary_path)
 {
     int res = 0;
     struct bootimg image;
-    char* custom_cmdline = "androidboot.selinux=permissive printk.devkmsg=on androidboot.android_dt_dir=/fakefstab/";
+    char* custom_cmdline = "androidboot.selinux=permissive printk.devkmsg=on androidboot.android_dt_dir=/fakefsbat/";
 
     INFO(NO_KEXEC_LOG_TEXT ": Going to check the bootimg in primary slot for slevel\n");
 
