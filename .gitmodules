@@ -3,4 +3,4 @@
 	url = https://github.com/Tasssadar/kexec-tools
 [submodule "adbd"]
 	path = adbd
-	url = https://github.com/vasishath/adbd
+	url = https://github.com/sfos-garlic/adbd
