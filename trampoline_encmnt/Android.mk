@@ -21,9 +21,9 @@ endif
 
 LOCAL_WHOLE_STATIC_LIBRARIES := libm libpng libz libft2_mrom_static
 
-ifneq ($(wildcard bootable/recovery/crypto/lollipop/cryptfs.h),)
+ifneq ($(wildcard bootable/recovery/crypto/fde/cryptfs.h),)
     mr_twrp_path := bootable/recovery
-else ifneq ($(wildcard bootable/recovery-twrp/crypto/lollipop/cryptfs.h),)
+else ifneq ($(wildcard bootable/recovery-twrp/crypto/fde/cryptfs.h),)
     mr_twrp_path := bootable/recovery-twrp
 else
     $(error Failed to find path to TWRP, which is required to build MultiROM with encryption support)
