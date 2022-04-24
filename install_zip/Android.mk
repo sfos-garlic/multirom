@@ -116,7 +116,7 @@ $(MULTIROM_ZIP_TARGET): multirom trampoline signapk bbootimg mrom_kexec_static m
 	@$(install_zip_path)/rename_zip.sh $(MULTIROM_ZIP_TARGET) $(TARGET_DEVICE) $(PWD)/$(multirom_local_path)/version.h $(MR_DEVICE_SPECIFIC_VERSION)
 	@echo ----- Made MultiROM ZIP installer -------- $@.zip
 
-#.PHONY: multirom_zip
+.PHONY: multirom_zip
 multirom_zip: $(MULTIROM_ZIP_TARGET)
 
 
@@ -141,7 +141,7 @@ $(MULTIROM_UNINST_TARGET): signapk bbootimg
 	@java -Djava.library.path=$(SIGNAPK_JNI_LIBRARY_PATH) -jar $(HOST_OUT_JAVA_LIBRARIES)/signapk.jar --min-sdk-version 26 $(DEFAULT_SYSTEM_DEV_CERTIFICATE).x509.pem $(DEFAULT_SYSTEM_DEV_CERTIFICATE).pk8 $(MULTIROM_UNINST_TARGET)-unsigned.zip $(MULTIROM_UNINST_TARGET).zip
 	@echo ----- Made MultiROM uninstaller -------- $@.zip
 
-#.PHONY: multirom_uninstaller
+.PHONY: multirom_uninstaller
 multirom_uninstaller: $(MULTIROM_UNINST_TARGET)
 
 
@@ -166,5 +166,5 @@ $(KERNEL_ZIP_TARGET): $(PRODUCT_OUT)/kernel kernel_inject signapk
 	$(install_zip_path)/rename_zip.sh $(KERNEL_ZIP_TARGET) $(TARGET_DEVICE) $(PWD)/$(multirom_local_path)/version.h
 	@echo ----- Made MultiROM Kernel ZIP installer -------- $@.zip
 
-#.PHONY: multirom_kernel_zip
+.PHONY: multirom_kernel_zip
 multirom_kernel_zip: $(KERNEL_ZIP_TARGET)
