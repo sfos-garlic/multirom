@@ -73,7 +73,10 @@ void do_reboot(int type);
 int mr_system(const char *shell_fmt, ...);
 char* read_file(char* file);
 
-inline int imin(int a, int b);
+int imin(int a, int b)
+{
+    return (a < b) ? a : b;
+}
 inline int imax(int a, int b);
 inline int iabs(int a);
 inline int in_rect(int x, int y, int rx, int ry, int rw, int rh);
